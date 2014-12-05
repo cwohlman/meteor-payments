@@ -7,11 +7,25 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0');
+  api.use('underscore');
+  api.use('mongo');
+
+  // Public api
   api.addFiles('payments.js');
+  api.export('Payments');
+
+  // Collections
+  api.addFiles('collections/logs.js');
+
+  // Operations
+  api.addFiles('operations/operation.js');
 });
 
 Package.onTest(function(api) {
   api.use('tinytest');
+  api.use('underscore');
   api.use('cwohlman:payments');
-  api.addFiles('payments-tests.js');
+
+  // These files actually run our tests
+  api.addFiles('tests/operation.js');
 });

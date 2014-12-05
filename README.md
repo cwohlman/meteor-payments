@@ -205,7 +205,7 @@ The payment processing system tries to be consistent in the way that it returns 
 When available these additional details are included in the error:
 ```javascript
 {
-    transactionId: "The id of the transaction which failed"
+    logId: "The id of the log document which contains further details"
     , internalError: "The error being wrapped, if it was a Meteor.Error"
 }
 ```

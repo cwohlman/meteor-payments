@@ -20,6 +20,7 @@ Package.onUse(function(api) {
   api.addFiles('collections/logs.js');
   api.addFiles('collections/customers.js');
   api.addFiles('collections/paymentMethods.js');
+  api.addFiles('collections/transactions.js');
 
   // Helpers
   api.addFiles('helpers/associateCredits.js');
@@ -29,6 +30,7 @@ Package.onUse(function(api) {
   // Operations
   api.addFiles('operations/operation.js');
   api.addFiles('operations/createPaymentMethod.js');
+  api.addFiles('operations/createTransaction.js');
 });
 
 Package.onTest(function(api) {

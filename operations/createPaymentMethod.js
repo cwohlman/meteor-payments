@@ -6,7 +6,7 @@ var providerCreateCustomer = Operation.create(function (userId) {
 
   var result = Payments.provider.createCustomer(userId);
   
-  self.processResponse(result);
+  self.processResponse(result, 'customerId');
 
   var customerId = result._id;
   Customers.insert({
@@ -41,7 +41,7 @@ var providerCreatePaymentMethod = Operation.create(
 
     var result = Payments.provider.createPaymentMethod(customerId, token);
 
-    self.processResponse(result);
+    self.processResponse(result, 'paymentMethodId');
 
     var paymentMethodId = result._id;
     PaymentMethods.insert({

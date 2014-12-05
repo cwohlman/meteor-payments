@@ -62,15 +62,18 @@ if (Meteor.isServer) {
       }
     }
     , createCredit: function (transaction) {
+      var paymentMethodId = transaction.paymentMethodId;
       var request = {
-        paymentMethodId: transaction.paymentMethodId
+        paymentMethodId: paymentMethodId
         , kind: 'credit'
         , amount: transaction.amount
+
       };
       var requestId = Random.id();
       var paymentMethod = MockPaymentMethods.findOne(paymentMethodId);
       var paymentId;
       if (paymentMethod && paymentMethod.isBank) {
+        request.status = 'success';
         paymentId = MockPayments.insert(request);
         return {
           _id: paymentId
@@ -102,8 +105,9 @@ if (Meteor.isServer) {
       }
     }
     , createDebit: function (transaction) {
+      var paymentMethodId = transaction.paymentMethodId;
       var request = {
-        paymentMethodId: transaction.paymentMethodId
+        paymentMethodId: paymentMethodId
         , kind: 'debit'
         , amount: -transaction.amount
       };
@@ -111,6 +115,7 @@ if (Meteor.isServer) {
       var paymentMethod = MockPaymentMethods.findOne(paymentMethodId);
       var paymentId;
       if (paymentMethod && paymentMethod.isCard) {
+        request.status = 'success';
         paymentId = MockPayments.insert(request);
         return {
           _id: paymentId

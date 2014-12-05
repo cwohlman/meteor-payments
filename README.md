@@ -16,7 +16,7 @@ This package is database operation heavy - we err on the side of too much databa
 Basic Operations
 ==========================
 
-- `Payments.createPaymentMethod(userId, paymentMethod)` - Store a particular payment method on a particular user. This method will ensure that the user has an associated account in the payment processing system and will associate the specified paymentMethod with their account.
+- `Payments.createPaymentMethod(userId, paymentMethod)` - Store a particular payment method on a particular user. This method will ensure that the user has an associated account in the payment processing system and will associate the specified paymentMethod with their account. Should return the id of the newly created paymentMethod.
 
 - `Payments.createTransaction(transaction, overrideWarnings)` - Takes an object, ensures that the object is a valid transaction request and creates a transaction through the implemented payments provider.
 This method goes to a lot of trouble to ensure that the transaction passed in is a valid transaction and hasn't been processed already.
@@ -108,12 +108,17 @@ Both collections share a similar data structure:
     // Both collections share these fields:
 
     _id: "Some unique id"
+    , providerId: "The unique id of this transaction in the providers db"
+    // this should be an id returned by the payment provider which is unique
+    // across all requests, generally called a requestId, this id, if provided
+    // should be unique across all log entries
     // executorId is null in the case that your server performs updates in
     // the background
     , executorId: "The userId which performed this transaction"
     // userId should never be null, and no transaction should ever have
     // multiple userIds
     , userId: "The userId who's account was affected by this transaction"
+    , customerId: "The customerId of the affected user in the providers db"
     // amount should be positive for credits, negative for debits.
     , amount: "The amount of the transaction, null for non-transactions"
     , paymentMethodId: "The id of the payment method to be used"
@@ -136,11 +141,6 @@ Both collections share a similar data structure:
     // this id should be unique across all transactions, customers, and 
     // paymentMethods, it is the id assigned to a record by the payments
     // provider
-    , providerId: "The unique id of this transaction in the providers db"
-    , customerId: "The customerId of the affected user in the providers db"
-    // this should be an id returned by the payment provider which is unique
-    // across all requests, generally called a requestId, this id, if provided
-    // should be unique across all log entries
     , requestId: "The unique id of this server interaction"
     , request: "The request sent to the server, if available"
     , response: "The response received from the server, if avaiable"

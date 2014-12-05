@@ -28,4 +28,5 @@ Package.onTest(function(api) {
 
   // These files actually run our tests
   api.addFiles('tests/operation.js');
+  api.addFiles('tests/logs.js');
 });

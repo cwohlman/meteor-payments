@@ -27,8 +27,6 @@ Operation.create = function (fn, extensions) {
 };
 
 Operation.prototype.throwError = function (error) {
-  console.log(error);
-
   this.log({
     error: error
   });

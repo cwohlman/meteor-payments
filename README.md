@@ -86,6 +86,8 @@ This method goes to a lot of trouble to ensure that the transaction passed in is
 - `Payments.associateGuard(guard)` - Registers a function which will be called against all transactions
     + `guard` is a function `fn(transaction)` which will be run against all transactions. Should return a new Meteor.Error for warnings, should throw an error for errors or illegal operations.
 
+- `Payments.associateOrders(name, name, name ...)` - Registers field names which will be used to narrow results when checking orderTotal against transaction amount.
+
 - `Payments.find` - pass through to the underlying transactions collection
 
 - `Payments.findOne` - pass through to the underlying transactions collection
@@ -176,6 +178,8 @@ The payment methods collection has a simple structure:
     _id: "The unique id returned by the payment provider"
     , userId: "Id of the user who owns this payment method"
     , customerId: "Id of the user in the providers db"
+    , acceptsDebits: "true if this method accepts debits"
+    , acceptsCredits: "true if this method accepts credits"
     , dateCreated: "The date this record was created"
     , dateModified: "The date this record was last modified"
 }
@@ -246,6 +250,22 @@ Payments.provider = {
 }
 ```
 
+On the client the provider object should have only createToken methods:
+```javascript
+Payments.provider = {
+    // Should return a token, token can be a string, or an object, if your
+    // system needs to take different actions based on the kind of token then
+    // you should return an object, for example: {kind: 'card', token: 'xxxx'}
+    // callback is required since client interactions will be asyncronous
+    createCardToken: function (card, callback) {
+        callback(null, new Card(card));
+    }
+    , createBankToken: function (bankAccount, callback) {
+        callback(null, new BankAccount(bankAccount));
+    }
+}
+```
+
 All provider methods should wrap any asyncronous code in Meteor.wrapAsync, or use fibers to ensure they return syncronously and should return an object in this form:
 ```javascript
 {
@@ -266,8 +286,18 @@ All provider methods should wrap any asyncronous code in Meteor.wrapAsync, or us
     // negative for debits
     // positive for credits
     , amount: "Amount in cents"
+    // if you process the response to determine the error type you can set this
+    // field to an Error or Meteor.Error
+    , error: "Some Error Object"
     // any other payments supported field which should be stored, for example
     // requestId a unique id per client-server interaction
+
+    // createPaymentMethod should be sure to add flags for acceptsDebits
+    // and acceptsCredits, each flag defaults to false. These flags are for use
+    // in client side code (e.g. to hide payment methods which are not valid
+    // for a particular transaction)
+    , acceptsDebits: true
+    , acceptsCredits: false
 }
 ```
 

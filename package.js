@@ -9,6 +9,7 @@ Package.onUse(function(api) {
   api.versionsFrom('1.0');
   api.use('underscore');
   api.use('mongo');
+  api.use('check');
 
   // Public api
   api.addFiles('payments.js');
@@ -17,6 +18,11 @@ Package.onUse(function(api) {
   // Collections
   api.addFiles('collections/logs.js');
 
+  // Helpers
+  api.addFiles('helpers/associateCredits.js');
+  api.addFiles('helpers/associateDebits.js');
+  api.addFiles('helpers/associateOrders.js');
+
   // Operations
   api.addFiles('operations/operation.js');
 });
@@ -24,7 +30,13 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('tinytest');
   api.use('underscore');
+  api.use('mongo');
+
   api.use('cwohlman:payments');
+
+  // The mock payment provider
+  api.addFiles('tests/mock-provider.js');
+  api.addFiles('tests/mock-app.js');
 
   // These files actually run our tests
   api.addFiles('tests/operation.js');

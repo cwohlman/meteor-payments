@@ -15,7 +15,7 @@ var providerCreateCustomer = Operation.create(function (userId) {
   });
 
   self.log({});
-  return Customers.findOne(customerId);
+  return customerId;
 }, {
   makeError: function (error) {
     return new Meteor.Error(
@@ -53,7 +53,7 @@ var providerCreatePaymentMethod = Operation.create(
     });
 
     self.log({});
-    return PaymentMethods.findOne(paymentMethodId);
+    return paymentMethodId;
 }, {
   makeError: function (error) {
     return new Meteor.Error(
@@ -77,19 +77,19 @@ Payments.createPaymentMethod = Operation.create(function (userId, token) {
     userId: userId
   });
   if (!customer) {
-    customer = providerCreateCustomer(userId);
+    customerId = providerCreateCustomer(userId);
   }
-  trace.customerId = customer._id;
+  trace.customerId = customerId;
 
-  var paymentMethod = providerCreatePaymentMethod(customer._id, token);
-  trace.paymentMethodId = paymentMethod._id;
+  var paymentMethodId = providerCreatePaymentMethod(customerId, token);
+  trace.paymentMethodId = paymentMethodId;
 
   // We don't need to log anything because we didn't interact with the server.
   // each of the two methods we might have called will log their interaction
   // with the payment processing server.
   // We still record all relevant ids on the trace object for consistency.
 
-  return paymentMethod._id;
+  return paymentMethodId;
 }, {
   throwError: function (error) {
     var recognizedCode = error && _.contains([

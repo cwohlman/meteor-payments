@@ -57,7 +57,7 @@ var providerCreatePaymentMethod = Operation.create(
 }, {
   makeError: function (error) {
     return new Meteor.Error(
-      'create-customer-failed'
+      'create-paymentMethod-failed'
       , 'Could not create customer record with the payment provider'
       , {
         internalError: error instanceof Meteor.Error ? error : null

@@ -28,4 +28,29 @@ if (Meteor.isServer) {
 
       test.equal(paymentMethod.userId, userId);
   });
+  Tinytest.add(
+    'Payments - Transactions - Handles invalid payment method'
+    , function (test) {
+      // Create a dummy user for this transaction
+      var userId = Meteor.users.insert({
+        profile: {
+          name: 'joe'
+        }
+      });
+      
+      // Insert a dummy credit to the users account
+      var creditId = MockCredits.insert({
+        userId: userId
+        , amount: 100
+      });
+
+      // Generate a mock payment token
+      var token = 'xxx';
+
+      test.throws(function () {
+        Payments.createPaymentMethod(userId, token);
+      }, function (err) {
+        return err.error === 'create-paymentMethod-failed';
+      });
+  });
 }

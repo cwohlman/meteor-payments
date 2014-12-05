@@ -10,6 +10,7 @@ Package.onUse(function(api) {
   api.use('underscore');
   api.use('mongo');
   api.use('check');
+  api.use('accounts-base');
 
   // Public api
   api.addFiles('payments.js');
@@ -17,6 +18,8 @@ Package.onUse(function(api) {
 
   // Collections
   api.addFiles('collections/logs.js');
+  api.addFiles('collections/customers.js');
+  api.addFiles('collections/paymentMethods.js');
 
   // Helpers
   api.addFiles('helpers/associateCredits.js');
@@ -25,6 +28,7 @@ Package.onUse(function(api) {
 
   // Operations
   api.addFiles('operations/operation.js');
+  api.addFiles('operations/createPaymentMethod.js');
 });
 
 Package.onTest(function(api) {
@@ -41,4 +45,5 @@ Package.onTest(function(api) {
   // These files actually run our tests
   api.addFiles('tests/operation.js');
   api.addFiles('tests/logs.js');
+  api.addFiles('tests/transactions.js');
 });

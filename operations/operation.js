@@ -20,6 +20,7 @@ Operation.create = function (fn, extensions) {
     try {
       result = fn.apply(self, arguments);
     } catch (e) {
+      // throw e;
       result = self.throwError(e);
     }
     return result;
@@ -63,4 +64,22 @@ Operation.prototype.update = function (collection, selector, modifier) {
   modifier.$set.dateModified = new Date();
 
   return collection.update(selector, modifier);
+};
+
+Operation.prototype.processResponse = function (response, idField) {
+  var self = this;
+
+  if (response) {
+    _.each([
+      "status"
+      , "request"
+      , "response"
+      , "amount"
+      , "error"
+      , "requestId"
+      ], function (val) {
+        self.trace[val] = response[val];
+      });
+    self.trace[idField] = response._id;
+  }
 };

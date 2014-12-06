@@ -1,11 +1,43 @@
-Payments.createTransaction = Operation.create(function (transaction) {
+Payments.createTransaction = Operation.create(function (
+  transaction, overrideWarnings
+) {
   var self = this
     , trace = self.trace;
 
   _.extend(trace, transaction);
 
+  // Pre insert transaction.
   var transactionId = Transactions.insert(transaction);
   trace.transactionId = transactionId;
+
+  // Process payment guards
+  var warnings = _.map(Payments._guards, function (guard) {
+    try {
+      return guard(transaction);
+    } catch (e) {
+      Transactions.remove(transactionId);
+      delete trace.transactionId;
+      throw e;
+    }
+  });
+
+  warnings = _.filter(warnings, _.isObject);
+
+  trace.warnings = warnings;
+  trace.errors = _.filter(warnings, function (a) {
+    var code = a.error;
+    var overrideAll = overrideWarnings && overrideWarnings["*"] === true;
+    var overrideThis = overrideWarnings && overrideWarnings[code] === true;
+    return !overrideAll && !overrideThis;
+  });
+
+  if (trace.errors.length) {
+    Transactions.remove(transactionId);
+    delete trace.transactionId;
+    throw trace.errors[0];
+  }
+
+  trace.sentRequest = true;
 
   var result;
   if (transaction.kind === 'credit') {
@@ -15,6 +47,8 @@ Payments.createTransaction = Operation.create(function (transaction) {
   } else {
     throw new Error('transaction kind is invalid');
   }
+
+  trace.gotResponse = true;
 
   self.processResponse(result, 'providerId');
 
@@ -26,38 +60,39 @@ Payments.createTransaction = Operation.create(function (transaction) {
       }
     });
   } else {
-    throw new Meteor.Error("no response was recieved from the server");
+    throw new Error("no response was recieved from the server");
   }
 
   if (result.error || result.status === 'error') {
-    throw new Meteor.Error(
-      'transaction-rejected'
-      , "The transaction was rejected by the payment provider"
-      , {
-        internalError: result.error
-      }
-    );
+    throw result.error || new Error('the server returned an error');
   }
 
   return transactionId;
 }, {
   makeError: function (error) {
-    var recognizedCode = error && _.contains([
-      "transaction-failed"
-      , "transaction-rejected"
-      , "transaction-invalid"
-      ], error.error);
+    var self = this;
+    var trace = self.trace;
 
-    // If we recognize the error code, pass the error on through.
-    if (recognizedCode) {
-      error.details.logId = this.logId;
-      return error;
+    var code;
+    var message;
+
+    if (!trace.sentRequest) {
+      // Error was thrown before the request was made
+      code = "transaction-invalid";
+      message = "The transaction is invalid";
+    } else if (trace.gotResponse) {
+      code = "transaction-rejected";
+      message = "The transaction was rejected by the payment provider";
+    } else {
+      code = "transaction-failed";
+      message = "The transaction failed unexpectedly";
     }
-    // otherwise use the default handling code.
-    else {
-      return new Meteor.Error(
-        'transaction-failed'
-        , "The transaction failed unexpectedly.");
-    }
-  }
+
+    return new Meteor.Error(
+      code
+      , message
+      , {
+        logId: this.trace.logId
+        , internalError: error instanceof Meteor.Error ? error : null
+      });  }
 });

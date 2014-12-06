@@ -20,6 +20,20 @@ if (Meteor.isServer) {
       return doc;
     }]
     , 'associateOrders': ['orderId']
+    , 'associateGuard': [function (transaction) {
+      if (transaction.isInvalid) {
+        throw new Meteor.Error(
+          'transaction-is-invalid'
+          , "The transaction is invalid."
+        );
+      }
+      if (transaction.isRisky) {
+        return new Meteor.Error(
+          'transaction-is-risky'
+          , "The transaction is risky"
+        );
+      }
+    }]
   }, function (args, key) {
       Tinytest.add(
         'Payments - Config - Payments.' + key + ' exists'

@@ -26,6 +26,7 @@ Package.onUse(function(api) {
   api.addFiles('helpers/associateCredits.js');
   api.addFiles('helpers/associateDebits.js');
   api.addFiles('helpers/associateOrders.js');
+  api.addFiles('helpers/associateGuard.js');
 
   // Operations
   api.addFiles('operations/operation.js');
@@ -48,4 +49,5 @@ Package.onTest(function(api) {
   api.addFiles('tests/operation.js');
   api.addFiles('tests/logs.js');
   api.addFiles('tests/transactions.js');
+  api.addFiles('tests/guards.js');
 });

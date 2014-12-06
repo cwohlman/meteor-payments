@@ -48,33 +48,71 @@ Payments.associateGuard(function (transaction) {
   // If we owe the customer money after the transaction, and this is a charge
   // that's an error.
   if (newBalance < 0 && transaction.amount < 0) {
-    errors.push(new Error("Transaction over charges customer"));
+    errors.push(new Payments.Error(
+      "over-charges-customer"
+      , "Transaction over charges customer"
+      , {
+        totalCredits: totalCredits
+        , totalDebits: totalDebits
+        , totalTransactions: totalTransactions
+        , customerBalance: customerBalance
+        , newBalance: newBalance
+    }));
   }
   // If the customer owes us money after the transaction, and this is a credit
   // that's an error
   if (newBalance > 0 && transaction.amount > 0) {
-    errors.push(new Error("Transaction over credits customer"));
+    errors.push(new Payments.Error(
+      "over-credits-customer"
+      , "Transaction over credits customer"
+      , {
+        totalCredits: totalCredits
+        , totalDebits: totalDebits
+        , totalTransactions: totalTransactions
+        , customerBalance: customerBalance
+        , newBalance: newBalance
+    }));
   }
 
   if (Payments._orderFields) {
     var filter = {};
     _.each(Payments._orderFields, function (val) {
-      filter[val] = transaction[val];
+      if (transaction[val]) filter[val] = transaction[val];
     });
 
-    var orderCredits = credits.where(filter).reduce(creditMemo, 0).value();
-    var orderDebits = debits.where(filter).reduce(debitMemo, 0).value();
-    var orderTransactions = transactions.where(filter).reduce(debitMemo, 0)
-      .value();
+    if (_.any(filter, _.identity)) {
+      var orderCredits = credits.where(filter).reduce(creditMemo, 0).value();
+      var orderDebits = debits.where(filter).reduce(debitMemo, 0).value();
+      var orderTransactions = transactions.where(filter).reduce(debitMemo, 0)
+        .value();
 
-    var orderBalance = orderCredits + orderDebits + orderTransactions;
-    var adjustedBalance = orderBalance + transaction.amount;
+      var orderBalance = orderCredits + orderDebits + orderTransactions;
+      var adjustedBalance = orderBalance + transaction.amount;
 
-    if (adjustedBalance < 0 && transaction.amount < 0) {
-      errors.push(new Error("Transaction over charges order"));
-    }
-    if (adjustedBalance > 0 && transaction.amount > 0) {
-      errors.push(new Error("Transaction over credits order"));
+      if (adjustedBalance < 0 && transaction.amount < 0) {
+        errors.push(new Payments.Error(
+          "over-charges-order"
+          , "Transaction over charges order"
+          , {
+            orderCredits: orderCredits
+            , orderDebits: orderDebits
+            , orderTransactions: orderTransactions
+            , orderBalance: orderBalance
+            , adjustedBalance: adjustedBalance
+        }));
+      }
+      if (adjustedBalance > 0 && transaction.amount > 0) {
+        errors.push(new Payments.Error(
+          "over-credits-order"
+          , "Transaction over credits order"
+          , {
+            orderCredits: orderCredits
+            , orderDebits: orderDebits
+            , orderTransactions: orderTransactions
+            , orderBalance: orderBalance
+            , adjustedBalance: adjustedBalance
+        }));
+      }
     }
   }
 

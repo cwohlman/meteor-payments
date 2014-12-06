@@ -21,6 +21,7 @@ Operation.create = function (fn, extensions) {
       result = fn.apply(self, arguments);
     } catch (e) {
       // throw e;
+      console.log('error', e.message);
       result = self.throwError(e);
     }
     return result;

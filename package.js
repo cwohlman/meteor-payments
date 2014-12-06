@@ -29,6 +29,7 @@ Package.onUse(function(api) {
   api.addFiles('helpers/associateGuard.js');
 
   // Guards
+  api.addFiles('guards/errors.js');
   api.addFiles('guards/preventOverCharge.js');
   api.addFiles('guards/preventWrongCard.js');
   api.addFiles('guards/preventNonIntegerAmounts.js');

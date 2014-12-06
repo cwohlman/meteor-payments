@@ -27,6 +27,20 @@ Operation.create = function (fn, extensions) {
   };
 };
 
+Operation.prototype.jsonableError = function (error) {
+  // Most errors don't easily convert to json (i.e. can't be stored in mongodb)
+  if (_.isObject(error)) {
+    return {
+      error: error.error || error.toString()
+      , message: error.message
+      , stack: error.stack
+      , details: error.details
+    };
+  } else {
+    return error;
+  }
+};
+
 Operation.prototype.throwError = function (error) {
   this.log({
     error: error
@@ -46,6 +60,7 @@ Operation.prototype.log = function (trace) {
   trace.dateEnded = new Date();
 
   var log = _.extend(this.trace, trace);
+  log.error = this.jsonableError(log.error);
   var logId = this.insert(Logs, log);
 
   this.trace.logId = logId;

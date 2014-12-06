@@ -61,6 +61,12 @@ Operation.prototype.log = function (trace) {
 
   var log = _.extend(this.trace, trace);
   log.error = this.jsonableError(log.error);
+  if (_.isArray(log.errors)) {
+    log.errors = _.map(log.errors, this.jsonableError);
+  }
+  if (_.isArray(log.warnings)) {
+    log.warnings = _.map(log.warnings, this.jsonableError);
+  }
   var logId = this.insert(Logs, log);
 
   this.trace.logId = logId;

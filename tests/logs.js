@@ -90,9 +90,57 @@ if (Meteor.isServer) {
         var log = Payments.logs.findOne(e.details.logId);
         test.equal(log.testId, "12345");
         test.isTrue(_.isObject(log.error));
-        test.equal(log.error.error, "Bug")
+        test.equal(log.error.error, "Bug");
         test.equal(log.error.message, "[Bug]");
         test.isTrue(log.error.stack.match("Bug"));
+      }
+  });
+  Tinytest.add(
+    'Payments - Logs - Logs errors property'
+    , function (test) {
+      var start = new Date();
+      var fn = Operation.create(function () {
+
+        this.log({
+          errors: [
+            new Error('Bug')
+          ]
+        });
+
+        throw new Error();
+      });
+
+      try {
+        fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+      } catch (e) {
+        var log = Payments.logs.findOne(e.details.logId);
+        test.isTrue(_.isObject(log.errors[0]));
+        test.equal(log.errors[0].message, "Bug");
+        test.isTrue(log.errors[0].stack.match("Bug"));
+      }
+  });
+  Tinytest.add(
+    'Payments - Logs - Logs warnings property'
+    , function (test) {
+      var start = new Date();
+      var fn = Operation.create(function () {
+
+        this.log({
+          warnings: [
+            new Error('Bug')
+          ]
+        });
+
+        throw new Error();
+      });
+
+      try {
+        fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+      } catch (e) {
+        var log = Payments.logs.findOne(e.details.logId);
+        test.isTrue(_.isObject(log.warnings[0]));
+        test.equal(log.warnings[0].message, "Bug");
+        test.isTrue(log.warnings[0].stack.match("Bug"));
       }
   });
 }

@@ -382,4 +382,34 @@ if (Meteor.isServer) {
         return err.error === 'transaction-invalid';
       });
   });
+  Tinytest.add(
+    'Payments - Built In Guards - Doesn\'t allow non-existant user'
+    , function (test) {
+      // Create a non-existant dummy user for this transaction
+      var userId = Random.id();
+      var debitId = MockCredits.insert({
+        userId: userId
+        , amount: 100
+      });
+
+      // Generate a mock payment token
+      var token;
+      MockTokenGenerator({account: true, routing: true}, function (err, val) {
+        token = val;
+      });
+
+      // Attach the mock token to the other user's account
+      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+
+      test.throws(function () {
+        Payments.createTransaction({
+          userId: userId
+          , paymentMethodId: paymentMethodId
+          , amount: 100
+          , kind: 'credit'
+        });
+      }, function (err) {
+        return err.error === 'transaction-invalid';
+      });
+  });
 }

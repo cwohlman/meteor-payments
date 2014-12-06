@@ -53,11 +53,11 @@ This method goes to a lot of trouble to ensure that the transaction passed in is
     ```
 
   Performs multiple checks:
-    - **customerTotal** - this check ensures that the amount of the transaction does not push the customer balance over 0
-    - **orderTotal** - this check narrows the set of examined transactions to include only those relevant to a particular order, to ensure that this transaction does not exceed the amount of that order.
+    - **customerTotal** - this check ensures that the amount of the transaction does not push the customer balance over 0 (can be overrided)
+    - **orderTotal** - this check narrows the set of examined transactions to include only those relevant to a particular order, to ensure that this transaction does not exceed the amount of that order. (can be overrided)
     - **associatedPaymentMethod** - this check ensures that the payment method in the request actually belongs to the customer in the request.
     - **amountIsInPennies** - this check ensures that the amount is in pennies, most payment systems do not allow fractional pennies, and your amount calculating logic should deal with fractional pennies before attempting to process a transaction.
-    - **userExists** - this check ensures that the user who's account is being modified still exists, you generally should not process transactions for user's who's accounts have been deleted.
+    - **userExists** - this check ensures that the user who's account is being modified still exists, you generally should not process transactions for user's who's accounts have been deleted. (can be overrided)
     - 
 
 - `Payments.associateCredits(getRecords, getAmounts)` - Registers two functions for calculating the a users current balance.

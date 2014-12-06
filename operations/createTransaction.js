@@ -30,7 +30,6 @@ Payments.createTransaction = Operation.create(function (
   warnings = _.flatten(warnings);
 
   warnings = _.filter(warnings, _.isObject);
-
   trace.warnings = warnings;
   trace.errors = _.filter(warnings, function (a) {
     var code = a.error;

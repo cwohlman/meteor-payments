@@ -345,3 +345,11 @@ Payments.processError = function (transaction, error) {
 ```
 
 
+To Do
+=========================
+
+1. Handle refunds
+2. Handle desputes
+3. Provide call-back methods
+4. Refactor errors
+

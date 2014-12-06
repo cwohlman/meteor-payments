@@ -415,7 +415,6 @@ if (Meteor.isServer) {
   Tinytest.add(
     'Payments - Built In Guards - Over charge customer warning is overridable'
     , function (test) {
-      console.log('-------------')
       // Create a non-existant dummy user for this transaction
       var userId = Meteor.users.insert({
         profile: {
@@ -561,6 +560,43 @@ if (Meteor.isServer) {
         , kind: 'debit'
       }, {
         'over-charges-order': true
+      });
+
+      // Check to see the payment was actually created
+      var payment = MockPayments.findOne({
+        paymentMethodId: paymentMethodId
+      });
+
+      test.equal(payment.amount, 100);
+      test.equal(payment.status, 'success');
+      test.equal(payment.kind, 'debit');
+  });
+  Tinytest.add(
+    'Payments - Built In Guards - Non existant user warning is overridable'
+    , function (test) {
+      // Create a non-existant dummy user for this transaction
+      var userId = Random.id();
+      var debitId = MockDebits.insert({
+        userId: userId
+        , amount: 100
+      });
+
+      // Generate a mock payment token
+      var token;
+      MockTokenGenerator({cvv: true, number: true}, function (err, val) {
+        token = val;
+      });
+
+      // Attach the mock token to the other user's account
+      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+
+      Payments.createTransaction({
+        userId: userId
+        , paymentMethodId: paymentMethodId
+        , amount: -100
+        , kind: 'debit'
+      }, {
+        'missing-user': true
       });
 
       // Check to see the payment was actually created

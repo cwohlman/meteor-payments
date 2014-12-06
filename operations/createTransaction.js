@@ -7,7 +7,13 @@ Payments.createTransaction = Operation.create(function (
   _.extend(trace, transaction);
 
   // Pre insert transaction.
+  // We insert the transaction here in case two transactions run simultaneously
+  // this allows the transaction amount checks to take into account any other
+  // pending transactions.
+  // Note that guards which calculate transaction amounts will need to filter
+  // out the current transaction
   var transactionId = Transactions.insert(transaction);
+  transaction._id = transactionId;
   trace.transactionId = transactionId;
 
   // Process payment guards
@@ -20,6 +26,8 @@ Payments.createTransaction = Operation.create(function (
       throw e;
     }
   });
+
+  warnings = _.flatten(warnings);
 
   warnings = _.filter(warnings, _.isObject);
 

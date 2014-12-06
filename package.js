@@ -28,6 +28,9 @@ Package.onUse(function(api) {
   api.addFiles('helpers/associateOrders.js');
   api.addFiles('helpers/associateGuard.js');
 
+  // Guards
+  api.addFiles('guards/preventOverCharge.js');
+
   // Operations
   api.addFiles('operations/operation.js');
   api.addFiles('operations/createPaymentMethod.js');
@@ -50,4 +53,5 @@ Package.onTest(function(api) {
   api.addFiles('tests/logs.js');
   api.addFiles('tests/transactions.js');
   api.addFiles('tests/guards.js');
+  api.addFiles('tests/builtin-guards.js');
 });

@@ -54,7 +54,7 @@ if (Meteor.isServer) {
       // Insert a dummy credit to the users account
       var debitId = MockDebits.insert({
         userId: userId
-        , amount: -100
+        , amount: 100
       });
 
       // Generate a mock payment token
@@ -93,7 +93,7 @@ if (Meteor.isServer) {
       });
       
       // Insert a dummy credit to the users account
-      var debitId = MockDebits.insert({
+      var debitId = MockCredits.insert({
         userId: userId
         , amount: 100
       });

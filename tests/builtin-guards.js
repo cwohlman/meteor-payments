@@ -72,7 +72,7 @@ if (Meteor.isServer) {
       });
   });
   Tinytest.add(
-    'Payments - Built In Guards - Doesn\'t block customer partial debits'
+    'Payments - Built In Guards - Allows customer partial debits'
     , function (test) {
       // Create a dummy user for this transaction
       var userId = Meteor.users.insert({
@@ -112,7 +112,7 @@ if (Meteor.isServer) {
       test.equal(payment.kind, 'debit');
   });
   Tinytest.add(
-    'Payments - Built In Guards - Doesn\'t block customer partial credits'
+    'Payments - Built In Guards - Allows customer partial credits'
     , function (test) {
       // Create a dummy user for this transaction
       var userId = Meteor.users.insert({
@@ -226,7 +226,7 @@ if (Meteor.isServer) {
       });
   });
   Tinytest.add(
-    'Payments - Built In Guards - Doesn\'t block order partial debits'
+    'Payments - Built In Guards - Allows order partial debits'
     , function (test) {
       // Create a dummy user for this transaction
       var userId = Meteor.users.insert({
@@ -268,7 +268,7 @@ if (Meteor.isServer) {
       test.equal(payment.kind, 'debit');
   });
   Tinytest.add(
-    'Payments - Built In Guards - Doesn\'t block order partial credits'
+    'Payments - Built In Guards - Allows order partial credits'
     , function (test) {
       // Create a dummy user for this transaction
       var userId = Meteor.users.insert({

@@ -31,6 +31,7 @@ Package.onUse(function(api) {
   // Guards
   api.addFiles('guards/preventOverCharge.js');
   api.addFiles('guards/preventWrongCard.js');
+  api.addFiles('guards/preventNonIntegerAmounts.js');
 
   // Operations
   api.addFiles('operations/operation.js');

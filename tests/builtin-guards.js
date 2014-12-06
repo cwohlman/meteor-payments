@@ -348,4 +348,38 @@ if (Meteor.isServer) {
         return err.error === 'transaction-invalid';
       });
   });
+  Tinytest.add(
+    'Payments - Built In Guards - Doesn\'t allow non-integer payment amounts'
+    , function (test) {
+      // Create a dummy user for this transaction
+      var userId = Meteor.users.insert({
+        profile: {
+          name: 'joe'
+        }
+      });
+      var debitId = MockCredits.insert({
+        userId: userId
+        , amount: 100.12
+      });
+
+      // Generate a mock payment token
+      var token;
+      MockTokenGenerator({account: true, routing: true}, function (err, val) {
+        token = val;
+      });
+
+      // Attach the mock token to the other user's account
+      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+
+      test.throws(function () {
+        Payments.createTransaction({
+          userId: userId
+          , paymentMethodId: paymentMethodId
+          , amount: 100.12
+          , kind: 'credit'
+        });
+      }, function (err) {
+        return err.error === 'transaction-invalid';
+      });
+  });
 }

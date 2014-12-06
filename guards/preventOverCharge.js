@@ -24,30 +24,26 @@ Payments.associateGuard(function (transaction) {
     }
   }).fetch());
 
+  var creditMemo = function (memo, value) {
+    return memo - (value && value.amount || 0);
+  };
+  var debitMemo = function (memo, value) {
+    return memo + (value && value.amount || 0);
+  };
+
   // It's important to get the sign of these amounts correctly.
   // credits and debits are both returned as positive integers,
   // by negating the credit amounts we ensure that the combined total of
   // credits and debits is the amount the customer owes us.
-  var totalCredits = credits.reduce(function (memo, value) {
-    return memo - (value && value.amount || 0);
-  }, 0).value();
-  var totalDebits = debits.reduce(function (memo, value) {
-    return memo + (value && value.amount || 0);
-  }, 0).value();
+  var totalCredits = credits.reduce(creditMemo, 0).value();
+  var totalDebits = debits.reduce(debitMemo, 0).value();
   // we want the amounts to reflect what the customer owes us.
   // we don't need to negate the transactions amount because it already
   // reflects the amount that customers owe us as (debits are already negative)
-  var totalTransactions = transactions.reduce(function (memo, value) {
-    return memo + (value && value.amount || 0);
-  }, 0).value();
+  var totalTransactions = transactions.reduce(debitMemo, 0).value();
 
   var customerBalance = totalTransactions + totalCredits + totalDebits;
   var newBalance = customerBalance + transaction.amount;
-
-  // console.log('totalCredits', totalCredits)
-  // console.log('totalDebits', totalDebits)
-  // console.log('totalTransactions', totalTransactions)
-  // console.log('newBalance', newBalance)
 
   // If we owe the customer money after the transaction, and this is a charge
   // that's an error.
@@ -58,6 +54,28 @@ Payments.associateGuard(function (transaction) {
   // that's an error
   if (newBalance > 0 && transaction.amount > 0) {
     errors.push(new Error("Transaction over credits customer"));
+  }
+
+  if (Payments._orderFields) {
+    var filter = {};
+    _.each(Payments._orderFields, function (val) {
+      filter[val] = transaction[val];
+    });
+
+    var orderCredits = credits.where(filter).reduce(creditMemo, 0).value();
+    var orderDebits = debits.where(filter).reduce(debitMemo, 0).value();
+    var orderTransactions = transactions.where(filter).reduce(debitMemo, 0)
+      .value();
+
+    var orderBalance = orderCredits + orderDebits + orderTransactions;
+    var adjustedBalance = orderBalance + transaction.amount;
+
+    if (adjustedBalance < 0 && transaction.amount < 0) {
+      errors.push(new Error("Transaction over charges order"));
+    }
+    if (adjustedBalance > 0 && transaction.amount > 0) {
+      errors.push(new Error("Transaction over credits order"));
+    }
   }
 
   return errors;

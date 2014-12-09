@@ -8,6 +8,10 @@ var providerCreateCustomer = Operation.create(function (userId) {
   
   self.processResponse(result, 'customerId');
 
+  if (result.error || result.status !== 'success') {
+    throw result.error || new Error('Operation returned non-success.');
+  }
+
   var customerId = result._id;
   Customers.insert({
     _id: customerId
@@ -43,6 +47,10 @@ var providerCreatePaymentMethod = Operation.create(
 
     self.processResponse(result, 'paymentMethodId');
 
+    if (result.error || result.status !== 'success') {
+      throw result.error || new Error('Operation returned non-success.');
+    }
+
     var paymentMethodId = result._id;
     PaymentMethods.insert({
       _id: paymentMethodId
@@ -60,7 +68,7 @@ var providerCreatePaymentMethod = Operation.create(
   makeError: function (error) {
     return new Meteor.Error(
       'create-paymentMethod-failed'
-      , 'Could not create customer record with the payment provider'
+      , 'Could not create paymentMethod record with the payment provider'
       , {
         internalError: error instanceof Meteor.Error ? error : null
         , logId: this.trace.logId
@@ -70,7 +78,8 @@ var providerCreatePaymentMethod = Operation.create(
 
 Payments.createPaymentMethod = Operation.create(function (userId, token) {
   var self = this
-    , trace = self.trace;
+    , trace = self.trace
+    , customerId;
 
   trace.userId = userId;
   trace.token = token;
@@ -80,6 +89,8 @@ Payments.createPaymentMethod = Operation.create(function (userId, token) {
   });
   if (!customer) {
     customerId = providerCreateCustomer(userId);
+  } else {
+    customerId = customer._id;
   }
   trace.customerId = customerId;
 

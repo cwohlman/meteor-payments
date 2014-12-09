@@ -21,6 +21,10 @@ if (Meteor.isServer) {
       var paymentMethod = Payments.paymentMethods.findOne(paymentMethodId);
 
       test.equal(paymentMethod.userId, userId);
+      test.isTrue(_.isString(paymentMethod.name));
+      test.isTrue(paymentMethod.name.length > 3);
+      test.isTrue(_.isString(paymentMethod.description));
+      test.isTrue(paymentMethod.description.length > 3);
   });
   Tinytest.add(
     'Payments - Transactions - Handles invalid payment method'

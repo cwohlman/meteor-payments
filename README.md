@@ -298,6 +298,12 @@ All provider methods should wrap any asyncronous code in Meteor.wrapAsync, or us
     // for a particular transaction)
     , acceptsDebits: true
     , acceptsCredits: false
+
+    // createPaymentMethod should be sure to add the following fields for
+    // better user experience
+    // name is generally the last 4 digits of the cc number plus the brand
+    , name: "A short description of the card/bank account"
+    , description: "A longer user-readable description of the card"
 }
 ```
 

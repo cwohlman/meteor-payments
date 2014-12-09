@@ -48,6 +48,8 @@ if (Meteor.isServer) {
           , requestId: requestId
           , acceptsDebits: isCard
           , acceptsCredits: isBank
+          , name: clientToken.slice(-4)
+          , description: 'visa ' + clientToken.slice(-4)
         };
       } else {
         return {

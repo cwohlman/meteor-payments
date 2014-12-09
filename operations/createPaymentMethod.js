@@ -48,6 +48,8 @@ var providerCreatePaymentMethod = Operation.create(
       _id: paymentMethodId
       , userId: customer.userId
       , customerId: customerId
+      , name: result.name
+      , description: result.description
       , acceptsDebits: !!result.acceptsDebits
       , acceptsCredits: !!result.acceptsCredits
     });

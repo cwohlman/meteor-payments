@@ -63,7 +63,7 @@ This method goes to a lot of trouble to ensure that the transaction passed in is
 - `Payments.associateCredits(getRecords, getAmounts)` - Registers two functions for calculating the a users current balance.
     - A single call to associateCredits need not be exauhstive. It is perfectly valid and encouraged to register multiple functions for calculating the total amounts due to/from a particular user.
     - `getRecords` is a function `fn(userId)` which should return an array of documents which are relevant to the user in question.
-    - `getAmounts` is a function `fn(userId, doc)` which should return an object indicating the amount by which the users balance is decreased by the record in question (`doc`).
+    - `getAmounts` is a function `fn(doc)` which should return an object indicating the amount by which the users balance is decreased by the record in question (`doc`).
       `getAmounts` should not rely on `getRecords` to filter out documents which are not relevant but should instead perform it's own internal check of whether a particular document is relevant to the user in question.
       `getAmounts` should return an object, or array of objects in the following form:
       
@@ -352,4 +352,5 @@ To Do
 2. Handle desputes
 3. Provide call-back methods
 4. Refactor errors
+5. Tests for client side
 

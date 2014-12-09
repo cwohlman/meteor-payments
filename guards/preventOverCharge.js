@@ -8,6 +8,9 @@ Payments.associateGuard(function (transaction) {
       });
     })
     .flatten()
+    .filter(function (doc) {
+      return doc.userId === userId;
+    })
     ;
   var debits = _.chain(Payments._debitGetters)
     .map(function (options) {
@@ -16,6 +19,9 @@ Payments.associateGuard(function (transaction) {
       });
     })
     .flatten()
+    .filter(function (doc) {
+      return doc.userId === userId;
+    })
     ;
   var transactions = _.chain(Transactions.find({
     userId: userId

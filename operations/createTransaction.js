@@ -12,7 +12,7 @@ Payments.createTransaction = Operation.create(function (
   // pending transactions.
   // Note that guards which calculate transaction amounts will need to filter
   // out the current transaction
-  var transactionId = Transactions.insert(transaction);
+  var transactionId = self.insert(Transactions, transaction);
   transaction._id = transactionId;
   trace.transactionId = transactionId;
 
@@ -60,7 +60,7 @@ Payments.createTransaction = Operation.create(function (
   self.processResponse(result, 'providerId');
 
   if (result) {
-    Transactions.update(transactionId, {
+    self.update(Transactions, transactionId, {
       $set: {
         providerId: result._id
         , status: result.status

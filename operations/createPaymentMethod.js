@@ -13,7 +13,7 @@ var providerCreateCustomer = Operation.create(function (userId) {
   }
 
   var customerId = result._id;
-  Customers.insert({
+  self.insert(Customers, {
     _id: customerId
     , userId: userId
   });
@@ -52,7 +52,7 @@ var providerCreatePaymentMethod = Operation.create(
     }
 
     var paymentMethodId = result._id;
-    PaymentMethods.insert({
+    self.insert(PaymentMethods, {
       _id: paymentMethodId
       , userId: customer.userId
       , customerId: customerId

@@ -21,8 +21,6 @@ Operation.create = function (fn, extensions) {
     try {
       result = fn.apply(operation, arguments);
     } catch (e) {
-      // throw e;
-      // console.log('error', e.stack);
       result = operation.throwError(e);
     }
     return result;

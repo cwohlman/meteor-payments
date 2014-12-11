@@ -42,8 +42,6 @@ if (Meteor.isServer) {
       test.throws(function () {
         MockProvider.createPaymentMethod(userId, token);
       }, function (err) {
-        console.log('--------------------------------++===================')
-        console.log('xxx', err.sanitizedError.error);
         return err.sanitizedError.error === 'create-paymentMethod-failed';
       });
   });
@@ -98,7 +96,6 @@ if (Meteor.isServer) {
         }
       });
       
-      console.log('------------')
       // Insert a dummy credit to the users account
       var debitId = MockCredits.insert({
         userId: userId
@@ -110,8 +107,6 @@ if (Meteor.isServer) {
       MockTokenGenerator({account: true, routing: true}, function (err, val) {
         token = val;
       });
-
-      console.log('Credit', MockProvider.getAccountTotal({userId: userId}));
 
       // Attach the mock token to the user's account
       var paymentMethodId = MockProvider.createPaymentMethod(userId, token);

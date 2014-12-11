@@ -31,10 +31,6 @@ Payments.prototype.registerCredits = function (getter) {
   // Invert the amounts.
   return self.registerTransactions(function (transaction) {
     var result = getter(transaction);
-    // if (result.length) {
-      console.log('getting credits Credits');
-      // console.log(result)
-    // }
 
     check(result, [Object]);
     _.each(result, function (a) {
@@ -163,8 +159,6 @@ Payments.prototype.registerAccountField = function (fieldName) {
       check(transaction, Object);
       check(relatedTransactions, [Object]);
 
-      console.log('checking ' + fieldName);
-
       // We only run this check if the transaction actually contains a value
       // in the related field
       if (_.isUndefined(transaction[fieldName]))
@@ -173,18 +167,12 @@ Payments.prototype.registerAccountField = function (fieldName) {
       var accountTotal = self.getAccountTotal(filter, relatedTransactions);
 
       if (accountTotal > 0 && transaction.amount > 0) {
-        console.log('overcredit', accountTotal, transaction.amount);
         return new Payments.Error('transaction-overcredit'
           , "Transaction overcredits account: " + filter[fieldName] + 
             " (" + fieldName + ")"
         );
       }
       if (accountTotal < 0 && transaction.amount < 0) {
-        console.log(filter, _.find(relatedTransactions, function (a) {
-          return a[fieldName] === transaction[fieldName];
-        }).amount);
-        console.log('overcharge', accountTotal, transaction.amount);
-        // console.log(relatedTransactions);
         return new Payments.Error('transaction-overcharge'
           , "Transaction overcharges account: " + filter[fieldName] + 
             " (" + fieldName + ")"
@@ -219,7 +207,6 @@ Payments.prototype.getAccountTotal = function(filter, transactions) {
   }
   
   transactions = _.where(transactions, filter);
-  console.log(transactions);
   return _.reduce(transactions, function (memo, doc) {
     check(doc.amount, Match.Where(_.isFinite));
     return memo + doc.amount;

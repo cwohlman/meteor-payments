@@ -95,8 +95,6 @@ if (Meteor.isServer) {
       // Attach the mock token to the user's account
       var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-
-      console.log('--------------\n\n\n')
       MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId

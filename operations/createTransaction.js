@@ -1,8 +1,11 @@
-Payments.createTransaction = Operation.create(function (
+Payments.prototype.createTransaction = Operation.create(function (
   transaction, overrideWarnings
 ) {
-  var self = this
-    , trace = self.trace;
+  check(transaction, Object);
+  check(overrideWarnings, Match.Optional(Object));
+  var operation = this
+    , self = operation.self
+    , trace = operation.trace;
 
   _.extend(trace, transaction);
 
@@ -12,24 +15,26 @@ Payments.createTransaction = Operation.create(function (
   // pending transactions.
   // Note that guards which calculate transaction amounts will need to filter
   // out the current transaction
-  var transactionId = self.insert(Transactions, transaction);
+  var transactionId = operation.insert(Transactions, transaction);
   transaction._id = transactionId;
   trace.transactionId = transactionId;
 
   // Process payment guards
-  var warnings = _.map(Payments._guards, function (guard) {
-    try {
-      return guard(transaction);
-    } catch (e) {
-      Transactions.remove(transactionId);
-      delete trace.transactionId;
-      throw e;
-    }
-  });
+  var warnings;
+
+  try {
+    warnings = self.checkGuards(transaction);
+  } catch (e) {
+    // We remove the transaction because it really was never created.
+    // we've thrown an error, which will log this request, and also inform
+    // the caller that this transaction failed.
+    Transactions.remove(transactionId);
+    delete trace.transactionId;
+    throw e;
+  }
 
   warnings = _.flatten(warnings);
 
-  warnings = _.filter(warnings, _.isObject);
   trace.warnings = warnings;
   trace.errors = _.filter(warnings, function (a) {
     var code = a.error;
@@ -39,6 +44,9 @@ Payments.createTransaction = Operation.create(function (
   });
 
   if (trace.errors.length) {
+    // We remove the transaction because it really was never created.
+    // we've thrown an error, which will log this request, and also inform
+    // the caller that this transaction failed.
     Transactions.remove(transactionId);
     delete trace.transactionId;
     throw trace.errors[0];
@@ -48,19 +56,19 @@ Payments.createTransaction = Operation.create(function (
 
   var result;
   if (transaction.kind === 'credit') {
-    result = Payments.provider.createCredit(transaction);
+    result = self.provider.createCredit(transaction);
   } else if (transaction.kind === 'debit') {
-    result = Payments.provider.createDebit(transaction);
+    result = self.provider.createDebit(transaction);
   } else {
     throw new Error('transaction kind is invalid');
   }
 
   trace.gotResponse = true;
 
-  self.processResponse(result, 'providerId');
+  operation.processResponse(result, 'providerId');
 
   if (result) {
-    self.update(Transactions, transactionId, {
+    operation.update(Transactions, transactionId, {
       $set: {
         providerId: result._id
         , status: result.status
@@ -77,8 +85,8 @@ Payments.createTransaction = Operation.create(function (
   return transactionId;
 }, {
   makeError: function (error) {
-    var self = this;
-    var trace = self.trace;
+    var operation = this;
+    var trace = operation.trace;
 
     var code;
     var message;

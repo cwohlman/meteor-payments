@@ -22,10 +22,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100
@@ -37,7 +37,7 @@ if (Meteor.isServer) {
       });
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100
@@ -71,9 +71,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: 100
@@ -115,9 +115,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: 100
@@ -159,10 +159,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100

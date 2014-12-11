@@ -1,4 +1,4 @@
-Payments.associateGuard(function (transaction) {
+Payments.prototype.registerGuard(function (transaction) {
   if (!transaction.userId) {
     return new Payments.Error('missing-user', 'Transaction does not have a userId');
   }

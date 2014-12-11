@@ -2,8 +2,10 @@ MockPayments = new Mongo.Collection('mock-payments');
 MockCustomers = new Mongo.Collection('mock-customers');
 MockPaymentMethods = new Mongo.Collection('mock-payment-methods');
 
+MockProvider = new Payments();
+
 if (Meteor.isServer) {
-  Payments.provider = {
+  MockProvider.provider = {
     createCustomer: function (userId) {
       var customerId = MockCustomers.insert({
         userId: userId
@@ -162,7 +164,7 @@ MockTokenGenerator = function (card, callback) {
 };
 
 if (Meteor.isClient) {
-  Payments.provider = {
+  MockProvider.provider = {
     createCardToken: MockTokenGenerator
     , createBankToken: MockTokenGenerator
   };

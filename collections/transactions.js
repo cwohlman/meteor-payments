@@ -1,6 +1,6 @@
 Transactions = new Mongo.Collection('payments-transactions');
 
-Payments.transactions = {
+Payments.prototype.transactions = {
   find: function () {
     return Transactions.find.apply(Transactions, arguments);
   }

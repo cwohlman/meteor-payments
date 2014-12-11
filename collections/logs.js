@@ -1,6 +1,6 @@
 Logs = new Mongo.Collection('payments-logs');
 
-Payments.logs = {
+Payments.prototype.logs = {
   find: function () {
     return Logs.find.apply(Logs, arguments);
   }

@@ -1,3 +1,3 @@
 PaymentMethods = new Mongo.Collection('payments-paymentMethods');
 
-Payments.paymentMethods = PaymentMethods;
+Payments.prototype.paymentMethods = PaymentMethods;

@@ -1,4 +1,4 @@
-Payments.associateGuard(function (transaction) {
+Payments.prototype.registerGuard(function (transaction) {
   var paymentMethod = PaymentMethods.findOne(transaction.paymentMethodId);
   if (!paymentMethod) {
     throw new Error('Payment method not found');

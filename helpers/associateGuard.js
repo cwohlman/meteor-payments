@@ -1,6 +1,10 @@
-Payments._guards = [];
-
-Payments.associateGuard = function (guard) {
+Payments.associateGuard = Payments.prototype.associateGuard = function (guard) {
   check(guard, Function);
-  Payments._guards.push(guard);
+  var self = this;
+
+  // Lazily instantiate self._guards
+  if (!_.isArray(self._guards))
+    self._guards = [];
+
+  self._guards.push(guard);
 };

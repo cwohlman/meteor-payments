@@ -23,10 +23,10 @@ Package.onUse(function(api) {
   api.addFiles('collections/transactions.js');
 
   // Helpers
-  api.addFiles('helpers/associateCredits.js');
-  api.addFiles('helpers/associateDebits.js');
-  api.addFiles('helpers/associateOrders.js');
-  api.addFiles('helpers/associateGuard.js');
+  // api.addFiles('helpers/associateCredits.js');
+  // api.addFiles('helpers/associateDebits.js');
+  // api.addFiles('helpers/associateOrders.js');
+  // api.addFiles('helpers/associateGuard.js');
 
   // Guards
   api.addFiles('guards/errors.js');

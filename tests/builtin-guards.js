@@ -22,10 +22,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: -100
@@ -58,10 +58,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100
@@ -93,9 +93,11 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+
+      console.log('--------------\n\n\n')
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: -100
@@ -133,9 +135,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: 100
@@ -174,10 +176,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: -100
@@ -211,10 +213,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , orderId: Random.id()
           , paymentMethodId: paymentMethodId
@@ -248,9 +250,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , orderId: orderId
         , paymentMethodId: paymentMethodId
@@ -290,9 +292,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , orderId: orderId
         , paymentMethodId: paymentMethodId
@@ -335,10 +337,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(otherUserId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(otherUserId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100
@@ -369,10 +371,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100.12
@@ -399,10 +401,10 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
       test.throws(function () {
-        Payments.createTransaction({
+        MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
           , amount: 100
@@ -429,14 +431,14 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
-      Payments.createTransaction({
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: -100
         , kind: 'debit'
       }, {
-        'over-charges-customer': true
+        'transaction-overcharge': true
       });
 
       // Check to see the payment was actually created
@@ -465,15 +467,15 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: 100
         , kind: 'credit'
       }, {
-        'over-credits-customer': true
+        'transaction-overcredit': true
       });
 
       // Check to see the payment was actually created
@@ -507,16 +509,16 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , orderId: orderId
         , paymentMethodId: paymentMethodId
         , amount: 100
         , kind: 'credit'
       }, {
-        'over-credits-order': true
+        'transaction-overcredit': true
       });
 
       // Check to see the payment was actually created
@@ -550,16 +552,16 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , orderId: orderId
         , paymentMethodId: paymentMethodId
         , amount: -100
         , kind: 'debit'
       }, {
-        'over-charges-order': true
+        'transaction-overcharge': true
       });
 
       // Check to see the payment was actually created
@@ -588,9 +590,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the other user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      Payments.createTransaction({
+      MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: -100

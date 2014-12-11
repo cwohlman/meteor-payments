@@ -1,24 +1,25 @@
 var providerCreateCustomer = Operation.create(function (userId) {
-  var self = this
-    , trace = self.trace;
+  var operation = this
+    , self = operation.self
+    , trace = operation.trace;
 
   trace.userId = userId;
 
-  var result = Payments.provider.createCustomer(userId);
+  var result = self.provider.createCustomer(userId);
   
-  self.processResponse(result, 'customerId');
+  operation.processResponse(result, 'customerId');
 
   if (result.error || result.status !== 'success') {
     throw result.error || new Error('Operation returned non-success.');
   }
 
   var customerId = result._id;
-  self.insert(Customers, {
+  operation.insert(Customers, {
     _id: customerId
     , userId: userId
   });
 
-  self.log({});
+  operation.log({});
   return customerId;
 }, {
   makeError: function (error) {
@@ -34,8 +35,9 @@ var providerCreateCustomer = Operation.create(function (userId) {
 
 var providerCreatePaymentMethod = Operation.create(
   function (customerId, token) {
-  var self = this
-    , trace = self.trace;
+  var operation = this
+    , self = operation.self
+    , trace = operation.trace;
 
     trace.customerId = customerId;
     trace.token = token;
@@ -43,16 +45,16 @@ var providerCreatePaymentMethod = Operation.create(
     var customer = Customers.findOne(customerId);
     trace.userId = customer.userId;
 
-    var result = Payments.provider.createPaymentMethod(customerId, token);
+    var result = self.provider.createPaymentMethod(customerId, token);
 
-    self.processResponse(result, 'paymentMethodId');
+    operation.processResponse(result, 'paymentMethodId');
 
     if (result.error || result.status !== 'success') {
       throw result.error || new Error('Operation returned non-success.');
     }
 
     var paymentMethodId = result._id;
-    self.insert(PaymentMethods, {
+    operation.insert(PaymentMethods, {
       _id: paymentMethodId
       , userId: customer.userId
       , customerId: customerId
@@ -62,7 +64,7 @@ var providerCreatePaymentMethod = Operation.create(
       , acceptsCredits: !!result.acceptsCredits
     });
 
-    self.log({});
+    operation.log({});
     return paymentMethodId;
 }, {
   makeError: function (error) {
@@ -76,9 +78,10 @@ var providerCreatePaymentMethod = Operation.create(
   }
 });
 
-Payments.createPaymentMethod = Operation.create(function (userId, token) {
-  var self = this
-    , trace = self.trace
+Payments.prototype.createPaymentMethod = Operation.create(function (userId, token) {
+  var operation = this
+    , self = operation.self
+    , trace = operation.trace
     , customerId;
 
   trace.userId = userId;
@@ -88,13 +91,13 @@ Payments.createPaymentMethod = Operation.create(function (userId, token) {
     userId: userId
   });
   if (!customer) {
-    customerId = providerCreateCustomer(userId);
+    customerId = providerCreateCustomer.call(self, userId);
   } else {
     customerId = customer._id;
   }
   trace.customerId = customerId;
 
-  var paymentMethodId = providerCreatePaymentMethod(customerId, token);
+  var paymentMethodId = providerCreatePaymentMethod.call(self, customerId, token);
   trace.paymentMethodId = paymentMethodId;
 
   // We don't need to log anything because we didn't interact with the server.

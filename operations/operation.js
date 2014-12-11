@@ -12,17 +12,18 @@ Operation.create = function (fn, extensions) {
   return function () {
     // create a variable self to which we attach helper methods and which stores
     // the state of the current request.
-    var self = new Operation();
-    _.extend(self, extensions);
-    
+    var operation = new Operation();
+    _.extend(operation, extensions);
+    operation.self = this;
+
     var result;
 
     try {
-      result = fn.apply(self, arguments);
+      result = fn.apply(operation, arguments);
     } catch (e) {
       // throw e;
       console.log('error', e.stack);
-      result = self.throwError(e);
+      result = operation.throwError(e);
     }
     return result;
   };

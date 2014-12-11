@@ -5,22 +5,34 @@ if (Meteor.isServer) {
 
   // A complex way to initialize the payment processing system, this is
   _.each({
-    'associateCredits': [function (userId) {
-      return MockCredits.find({
-        userId: userId
-      }).fetch();
-    }, function (doc) {
-      return doc;
+    'registerCredits': [function (transaction) {
+      return _.map(MockCredits.find({
+        userId: transaction.userId
+      }).fetch(), function (doc) {
+        return _.pick(doc, '_id', 'amount', 'userId');
+      });
     }]
-    , 'associateDebits': [function (userId) {
-      return MockDebits.find({
-        userId: userId
-      }).fetch();
-    }, function (doc) {
-      return doc;
+    , 'registerDebits': [function (transaction) {
+      return _.map(MockDebits.find({
+        userId: transaction.userId
+      }).fetch(), function (doc) {
+        return _.pick(doc, '_id', 'amount', 'userId');
+      });
     }]
-    , 'associateOrders': ['orderId']
-    , 'associateGuard': [function (transaction) {
+    , 'registerTransactions': [function (transaction) {
+      var query = _.pick(transaction, 'orderId');
+      var credits = _.map(MockCredits.find(query).fetch(), function (doc) {
+        var result = _.pick(doc, '_id', 'amount', 'orderId');
+        result.amount = -result.amount;
+        return result;
+      });
+      var debits = _.map(MockDebits.find(query).fetch(), function (doc) {
+        return _.pick(doc, '_id', 'amount', 'orderId');
+      });
+      return credits.concat(debits);
+    }]
+    , 'registerOrderType': ['invoice', 'orderId']
+    , 'registerGuard': [function (transaction) {
       if (transaction.isInvalid) {
         throw new Meteor.Error(
           'transaction-is-invalid'
@@ -38,10 +50,10 @@ if (Meteor.isServer) {
       Tinytest.add(
         'Payments - Config - Payments.' + key + ' exists'
         , function (test) {
-          test.isTrue(_.isFunction(Payments[key]));
+          test.isTrue(_.isFunction(MockProvider[key]));
         });
       try {
-        Payments[key].apply(Payments, args);
+        MockProvider[key].apply(MockProvider, args);
         Tinytest.add(
           'Payments - Config - Payments.' + key
           , function (test) {
@@ -55,4 +67,13 @@ if (Meteor.isServer) {
           });
       }
   });
+  try {
+    MockProvider.registerOrderType('userCharge', 'userId');
+  } catch (e) {
+    Tinytest.add(
+      'Payments - Config - Payments.registerOrderType'
+      , function (test) {
+        throw e;
+      });
+  }
 }

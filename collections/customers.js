@@ -1,3 +1,3 @@
 Customers = new Mongo.Collection('payments-customers');
 
-Payments.customers = Customers;
+Payments.prototype.customers = Customers;

@@ -16,9 +16,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      var paymentMethod = Payments.paymentMethods.findOne(paymentMethodId);
+      var paymentMethod = MockProvider.paymentMethods.findOne(paymentMethodId);
 
       test.equal(paymentMethod.userId, userId);
       test.isTrue(_.isString(paymentMethod.name));
@@ -40,7 +40,7 @@ if (Meteor.isServer) {
       var token = 'xxx';
 
       test.throws(function () {
-        Payments.createPaymentMethod(userId, token);
+        MockProvider.createPaymentMethod(userId, token);
       }, function (err) {
         return err.error === 'create-paymentMethod-failed';
       });
@@ -68,9 +68,9 @@ if (Meteor.isServer) {
       });
 
       // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
 
-      var transactionId = Payments.createTransaction({
+      var transactionId = MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: -100
@@ -96,6 +96,7 @@ if (Meteor.isServer) {
         }
       });
       
+      console.log('------------')
       // Insert a dummy credit to the users account
       var debitId = MockCredits.insert({
         userId: userId
@@ -108,10 +109,12 @@ if (Meteor.isServer) {
         token = val;
       });
 
-      // Attach the mock token to the user's account
-      var paymentMethodId = Payments.createPaymentMethod(userId, token);
+      console.log('Credit', MockProvider.getAccountTotal({userId: userId}));
 
-      var transactionId = Payments.createTransaction({
+      // Attach the mock token to the user's account
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
+
+      var transactionId = MockProvider.createTransaction({
         userId: userId
         , paymentMethodId: paymentMethodId
         , amount: 100

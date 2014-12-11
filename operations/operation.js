@@ -22,7 +22,7 @@ Operation.create = function (fn, extensions) {
       result = fn.apply(operation, arguments);
     } catch (e) {
       // throw e;
-      console.log('error', e.stack);
+      // console.log('error', e.stack);
       result = operation.throwError(e);
     }
     return result;
@@ -47,15 +47,26 @@ Operation.prototype.throwError = function (error) {
   this.log({
     error: error
   });
+  if (!error) error = new Error('Unknown Error');
 
-  throw this.makeError(error);
+  if (!(error instanceof Meteor.Error || error.sanitizedError)) {
+    this.makeError(error);
+  }
+  if (!error.details) {
+    error.details = {};
+  }
+  if (!error.details.logId) {
+    error.details.logId = this.trace.logId;
+  }
+
+  throw error;
 };
 
 Operation.prototype.makeError = function (error) {
-  return new Meteor.Error(500, 'Internal Server Error', {
-    internalError: error instanceof Meteor.Error ? error : null
-    , logId: this.trace.logId
+  error.sanitizedError = new Meteor.Error(500, 'Internal Server Error', {
+    logId: this.trace.logId
   });
+  return error;
 };
 
 Operation.prototype.log = function (trace) {

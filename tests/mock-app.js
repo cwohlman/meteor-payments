@@ -34,13 +34,13 @@ if (Meteor.isServer) {
     , 'registerOrderType': ['invoice', 'orderId']
     , 'registerGuard': [function (transaction) {
       if (transaction.isInvalid) {
-        throw new Meteor.Error(
+        throw new Payments.Error(
           'transaction-is-invalid'
           , "The transaction is invalid."
         );
       }
       if (transaction.isRisky) {
-        return new Meteor.Error(
+        return new Payments.Error(
           'transaction-is-risky'
           , "The transaction is risky"
         );

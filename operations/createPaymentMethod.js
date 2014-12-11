@@ -23,12 +23,11 @@ var providerCreateCustomer = Operation.create(function (userId) {
   return customerId;
 }, {
   makeError: function (error) {
-    return new Meteor.Error(
+    error.sanitizedError = new Meteor.Error(
       'create-customer-failed'
       , 'Could not create customer record with the payment provider'
       , {
-        internalError: error instanceof Meteor.Error ? error : null
-        , logId: this.trace.logId
+        logId: this.trace.logId
     });
   }
 });
@@ -68,12 +67,11 @@ var providerCreatePaymentMethod = Operation.create(
     return paymentMethodId;
 }, {
   makeError: function (error) {
-    return new Meteor.Error(
+    error.sanitizedError = new Meteor.Error(
       'create-paymentMethod-failed'
       , 'Could not create paymentMethod record with the payment provider'
       , {
-        internalError: error instanceof Meteor.Error ? error : null
-        , logId: this.trace.logId
+        logId: this.trace.logId
     });
   }
 });
@@ -106,18 +104,4 @@ Payments.prototype.createPaymentMethod = Operation.create(function (userId, toke
   // We still record all relevant ids on the trace object for consistency.
 
   return paymentMethodId;
-}, {
-  throwError: function (error) {
-    var recognizedCode = error && _.contains([
-      "create-customer-failed"
-      , "create-paymentMethod-failed"
-      ], error.error);
-
-    // If we recognize the error code, pass the error on through.
-    if (recognizedCode) throw error;
-    // otherwise use the default handling code.
-    else {
-      Operation.prototype.throwError.apply(this, arguments);
-    }
-  }
 });

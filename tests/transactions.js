@@ -42,7 +42,9 @@ if (Meteor.isServer) {
       test.throws(function () {
         MockProvider.createPaymentMethod(userId, token);
       }, function (err) {
-        return err.error === 'create-paymentMethod-failed';
+        console.log('--------------------------------++===================')
+        console.log('xxx', err.sanitizedError.error);
+        return err.sanitizedError.error === 'create-paymentMethod-failed';
       });
   });
   Tinytest.add(

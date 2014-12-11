@@ -18,7 +18,7 @@ Tinytest.add('Payments - Operation - accepts unlimited arguments', function (tes
   test.equal(10, fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
 });
 
-Tinytest.add('Payments - Operation - wraps thrown errors', function (test) {
+Tinytest.add('Payments - Operation - sanitizes thrown errors', function (test) {
   var fn = Operation.create(function () {
     if (_.toArray(arguments).length > 5) throw new Error('Bug');
     else return true;
@@ -26,23 +26,14 @@ Tinytest.add('Payments - Operation - wraps thrown errors', function (test) {
 
   test.throws(function () {
     fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-  }, Meteor.Error);
-});
-
-Tinytest.add('Payments - Operation - wraps thrown meteor errors', function (test) {
-  var fn = Operation.create(function () {
-    if (_.toArray(arguments).length > 5) throw new Meteor.Error('Bug');
-    else return true;
+  }, function (error) {
+    return error.sanitizedError instanceof Meteor.Error;
   });
-
-  test.throws(function () {
-    fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-  }, 'Internal Server Error');
 });
 
-Tinytest.add('Payments - Operation - wrapped error contains logId', function (test) {
+Tinytest.add('Payments - Operation - thrown errors contain logId', function (test) {
   var fn = Operation.create(function () {
-    if (_.toArray(arguments).length > 5) throw new Meteor.Error('Bug');
+    if (_.toArray(arguments).length > 5) throw new Error('Bug');
     else return true;
   });
 
@@ -54,35 +45,43 @@ Tinytest.add('Payments - Operation - wrapped error contains logId', function (te
   }
 });
 
-Tinytest.add(
-  'Payments - Operation - wrapped error contains internalError'
-  , function (test) {
-    var fn = Operation.create(function () {
-      if (_.toArray(arguments).length > 5) throw new Meteor.Error('Bug');
-      else return true;
-    });
+Tinytest.add('Payments - Operation - sanitizedError error contains logId', function (test) {
+  var fn = Operation.create(function () {
+    if (_.toArray(arguments).length > 5) throw new Error('Bug');
+    else return true;
+  });
 
-    try {
-      fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-    } catch (e) {
-      test.isTrue(_.isObject(e.details));
-      test.isTrue(_.isObject(e.details.internalError));
-      test.equal(e.details.internalError.error, 'Bug');
-    }
+  try {
+    fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+  } catch (e) {
+    test.isTrue(_.isObject(e.sanitizedError.details));
+    test.isTrue(_.isString(e.sanitizedError.details.logId));
+  }
 });
 
-Tinytest.add(
-  'Payments - Operation - wrapped error contains only Meteor.Error internalError'
-  , function (test) {
-    var fn = Operation.create(function () {
-      if (_.toArray(arguments).length > 5) throw new Error('Bug');
-      else return true;
-    });
+Tinytest.add('Payments - Operation - does not sanatize Meteor errors', function (test) {
+  var fn = Operation.create(function () {
+    if (_.toArray(arguments).length > 5) throw new Meteor.Error('Bug');
+    else return true;
+  });
 
-    try {
-      fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-    } catch (e) {
-      test.isTrue(_.isObject(e.details));
-      test.isFalse(_.isObject(e.details.internalError));
-    }
+  test.throws(function () {
+    fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+  }, function (error) {
+    return error instanceof Meteor.Error && !error.sanitizedError;
+  });
+});
+
+Tinytest.add('Payments - Operation - thrown Meteor errors contain logId', function (test) {
+  var fn = Operation.create(function () {
+    if (_.toArray(arguments).length > 5) throw new Meteor.Error('Bug');
+    else return true;
+  });
+
+  try {
+    fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+  } catch (e) {
+    test.isTrue(_.isObject(e.details));
+    test.isTrue(_.isString(e.details.logId));
+  }
 });

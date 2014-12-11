@@ -32,7 +32,7 @@ if (Meteor.isServer) {
           , kind: 'debit'
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'transaction-overcharge';
       });
   });
   Tinytest.add(
@@ -68,7 +68,7 @@ if (Meteor.isServer) {
           , kind: 'credit'
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'transaction-overcredit';
       });
   });
   Tinytest.add(
@@ -187,7 +187,7 @@ if (Meteor.isServer) {
           , orderId: Random.id()
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'transaction-overcharge';
       });
   });
   Tinytest.add(
@@ -224,7 +224,7 @@ if (Meteor.isServer) {
           , kind: 'credit'
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'transaction-overcredit';
       });
   });
   Tinytest.add(
@@ -347,7 +347,7 @@ if (Meteor.isServer) {
           , kind: 'credit'
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'payment-wrong-user';
       });
   });
   Tinytest.add(
@@ -381,7 +381,7 @@ if (Meteor.isServer) {
           , kind: 'credit'
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'transaction-bad-amount';
       });
   });
   Tinytest.add(
@@ -411,7 +411,7 @@ if (Meteor.isServer) {
           , kind: 'credit'
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.error === 'missing-user';
       });
   });
   Tinytest.add(

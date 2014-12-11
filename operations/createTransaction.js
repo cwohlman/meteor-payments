@@ -103,11 +103,10 @@ Payments.prototype.createTransaction = Operation.create(function (
       message = "The transaction failed unexpectedly";
     }
 
-    return new Meteor.Error(
+    error.sanitizedError = new Meteor.Error(
       code
       , message
       , {
-        logId: this.trace.logId
-        , internalError: error instanceof Meteor.Error ? error : null
+        internalError: error instanceof Meteor.Error ? error : null
       });  }
 });

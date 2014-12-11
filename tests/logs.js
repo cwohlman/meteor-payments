@@ -24,7 +24,8 @@ if (Meteor.isServer) {
       try {
         fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
       } catch (e) {
-        test.isTrue(_.isObject(MockProvider.logs.findOne(e.details.logId)));
+        test.isTrue(_.isObject(MockProvider.logs.findOne(
+          e.sanitizedError.details.logId)));
       }
   });
   Tinytest.add(
@@ -41,7 +42,7 @@ if (Meteor.isServer) {
       try {
         fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
       } catch (e) {
-        var log = MockProvider.logs.findOne(e.details.logId);
+        var log = MockProvider.logs.findOne(e.sanitizedError.details.logId);
         test.equal(log.testId, "12345");
         test.isTrue(_.isDate(log.dateStarted));
         test.isTrue(_.isDate(log.dateEnded));
@@ -66,7 +67,7 @@ if (Meteor.isServer) {
       try {
         fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
       } catch (e) {
-        var log = MockProvider.logs.findOne(e.details.logId);
+        var log = MockProvider.logs.findOne(e.sanitizedError.details.logId);
         test.equal(log.testId, "12345");
         test.isTrue(_.isObject(log.error));
         test.equal(log.error.message, "Bug");
@@ -113,7 +114,7 @@ if (Meteor.isServer) {
       try {
         fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
       } catch (e) {
-        var log = MockProvider.logs.findOne(e.details.logId);
+        var log = MockProvider.logs.findOne(e.sanitizedError.details.logId);
         test.isTrue(_.isObject(log.errors[0]));
         test.equal(log.errors[0].message, "Bug");
         test.isTrue(log.errors[0].stack.match("Bug"));
@@ -137,7 +138,7 @@ if (Meteor.isServer) {
       try {
         fn(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
       } catch (e) {
-        var log = MockProvider.logs.findOne(e.details.logId);
+        var log = MockProvider.logs.findOne(e.sanitizedError.details.logId);
         test.isTrue(_.isObject(log.warnings[0]));
         test.equal(log.warnings[0].message, "Bug");
         test.isTrue(log.warnings[0].stack.match("Bug"));

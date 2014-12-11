@@ -12,7 +12,7 @@ if (Meteor.isServer) {
       // Insert a dummy credit to the users account
       var debitId = MockDebits.insert({
         userId: userId
-        , amount: 100
+        , amount: 200
       });
 
       // Generate a mock payment token
@@ -28,24 +28,26 @@ if (Meteor.isServer) {
         MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
-          , amount: 100
-          , kind: 'credit'
+          , amount: -100
+          , kind: 'debit'
           , isInvalid: true
         });
       }, function (err) {
-        return err.error === 'transaction-invalid'
+        return err.sanitizedError.error === 'transaction-invalid' &&
+          err.error === 'transaction-is-invalid';
       });
 
       test.throws(function () {
         MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
-          , amount: 100
-          , kind: 'credit'
+          , amount: -100
+          , kind: 'debit'
           , isRisky: true
         });
       }, function (err) {
-        return err.error === 'transaction-invalid'
+        return err.sanitizedError.error === 'transaction-invalid' &&
+          err.error === 'transaction-is-risky';
       });
   });
   Tinytest.add(
@@ -165,14 +167,15 @@ if (Meteor.isServer) {
         MockProvider.createTransaction({
           userId: userId
           , paymentMethodId: paymentMethodId
-          , amount: 100
-          , kind: 'credit'
+          , amount: -100
+          , kind: 'debit'
           , isInvalid: true
         }, {
           "*": true
         });
       }, function (err) {
-        return err.error === 'transaction-invalid';
+        return err.sanitizedError.error === 'transaction-invalid' &&
+          err.error === 'transaction-is-invalid';
       });
   });
 }

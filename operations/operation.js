@@ -86,6 +86,7 @@ Operation.prototype.log = function (trace) {
 };
 
 Operation.prototype.insert = function (collection, doc) {
+  doc.providerInstance = this.self._id;
   doc.dateCreated = new Date();
 
   return collection.insert(doc);

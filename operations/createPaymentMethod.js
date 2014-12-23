@@ -87,6 +87,7 @@ Payments.prototype.createPaymentMethod = Operation.create(function (userId, toke
 
   var customer = Customers.findOne({
     userId: userId
+    , providerInstance: self._id
   });
   if (!customer) {
     customerId = providerCreateCustomer.call(self, userId);

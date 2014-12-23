@@ -4,6 +4,8 @@ MockPaymentMethods = new Mongo.Collection('mock-payment-methods');
 
 MockProvider = new Payments();
 
+MockProvider._id = '_mock_provider_';
+
 if (Meteor.isServer) {
   MockProvider.provider = {
     createCustomer: function (userId) {
@@ -18,7 +20,7 @@ if (Meteor.isServer) {
           userId: userId
         }
         , response: {
-          custoemrId: customerId
+          customerId: customerId
           , requestId: requestId
         }
         , requestId: requestId

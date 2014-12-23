@@ -32,7 +32,7 @@ Payments.prototype.registerCredits = function (getter) {
   return self.registerTransactions(function (transaction) {
     var result = getter(transaction);
 
-    check(result, [Object]);
+    check(result, [Match.Where(_.isObject)]);
     _.each(result, function (a) {
       a.amount = -a.amount;
     });
@@ -157,7 +157,7 @@ Payments.prototype.registerAccountField = function (fieldName) {
     self._accountFields.push(fieldName);
     self.registerGuard(function (transaction, relatedTransactions) {
       check(transaction, Object);
-      check(relatedTransactions, [Object]);
+      check(relatedTransactions, [Match.Where(_.isObject)]);
 
       // We only run this check if the transaction actually contains a value
       // in the related field
@@ -190,7 +190,7 @@ Payments.prototype.getRelatedTransactions = function(filter) {
 
   return _.flatten(_.map(self._transactionGetters, function (getter) {
     var result = getter.call(self, filter);
-    check(result, [Object]);
+    check(result, [Match.Where(_.isObject)]);
     return result;
   }));
 };
@@ -199,7 +199,7 @@ Payments.prototype.getRelatedTransactions = function(filter) {
 // transactions and returns the sum of all amounts.
 Payments.prototype.getAccountTotal = function(filter, transactions) {
   check(filter, Object);
-  check(transactions, Match.Optional([Object]));
+  check(transactions, Match.Optional([Match.Where(_.isObject)]));
   var self = this;
 
   if (!transactions) {

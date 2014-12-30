@@ -82,6 +82,8 @@ Payments.prototype.createTransaction = Operation.create(function (
     throw result.error || new Error('the server returned an error');
   }
 
+  this.log({});
+
   return transactionId;
 }, {
   makeError: function (error) {

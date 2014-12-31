@@ -72,6 +72,7 @@ Payments.prototype.createTransaction = Operation.create(function (
       $set: {
         providerId: result._id
         , status: result.status
+        , net: result.net
       }
     });
   } else {

@@ -87,6 +87,46 @@ if (Meteor.isServer) {
       test.equal(payment.kind, 'debit');
   });
   Tinytest.add(
+    'Payments - Transactions - stores net'
+    , function (test) {
+      // Create a dummy user for this transaction
+      var userId = Meteor.users.insert({
+        profile: {
+          name: 'joe'
+        }
+      });
+      
+      // Insert a dummy credit to the users account
+      var debitId = MockDebits.insert({
+        userId: userId
+        , amount: 100
+      });
+
+      // Generate a mock payment token
+      var token;
+      MockTokenGenerator({number: true, cvv: true}, function (err, val) {
+        token = val;
+      });
+
+      // Attach the mock token to the user's account
+      var paymentMethodId = MockProvider.createPaymentMethod(userId, token);
+
+      var transactionId = MockProvider.createTransaction({
+        userId: userId
+        , paymentMethodId: paymentMethodId
+        , amount: -100
+        , kind: 'debit'
+      });
+
+      // Check to see the payment was actually created
+      var payment = MockProvider.transactions.findOne(transactionId);
+
+      test.equal(payment.amount, -100);
+      test.equal(payment.net, -100);
+      test.equal(payment.status, 'success');
+      test.equal(payment.kind, 'debit');
+  });
+  Tinytest.add(
     'Payments - Transactions - Simple credit transaction'
     , function (test) {
       // Create a dummy user for this transaction

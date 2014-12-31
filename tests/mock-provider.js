@@ -133,6 +133,7 @@ if (Meteor.isServer) {
             , status: 'success'
           }
           , amount: transaction.amount
+          , net: transaction.amount
           , requestId: requestId
         };
       } else {

@@ -48,7 +48,16 @@ Operation.prototype.throwError = function (error) {
   if (!error) error = new Error('Unknown Error');
 
   if (!(error instanceof Meteor.Error || error.sanitizedError)) {
+    console.log('makeError', error, error.sanitizedError);
     this.makeError(error);
+  }
+  this.attachTraceId(error);
+  throw error;
+};
+
+Operation.prototype.attachTraceId = function (error) {
+  if (error.sanitizedError) {
+    error = error.sanitizedError;
   }
   if (!error.details) {
     error.details = {};
@@ -56,11 +65,10 @@ Operation.prototype.throwError = function (error) {
   if (!error.details.logId) {
     error.details.logId = this.trace.logId;
   }
-
-  throw error;
 };
 
 Operation.prototype.makeError = function (error) {
+  var self = this.self;
   error.sanitizedError = new Meteor.Error(500, 'Internal Server Error', {
     logId: this.trace.logId
   });

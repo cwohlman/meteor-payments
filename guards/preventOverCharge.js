@@ -13,6 +13,9 @@ Payments.prototype.registerTransactions(function (transaction) {
     check(fieldName, String);
 
     var filter = _.pick(transaction, fieldName);
+    filter.status = {
+      $ne: "error"
+    };
     if (self._id) filter.providerInstance = self._id;
     var fields = {
       amount: 1

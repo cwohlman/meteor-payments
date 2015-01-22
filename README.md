@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/cwohlman/meteor-payments.png?label=ready&title=Ready)](https://waffle.io/cwohlman/meteor-payments)
 Bulletproof Payment Processing for meteor.js
 ==========================
 

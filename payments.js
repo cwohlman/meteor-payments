@@ -169,13 +169,14 @@ Payments.prototype.registerAccountField = function (fieldName) {
       if (accountTotal > 0 && transaction.amount > 0) {
         return new Payments.Error('transaction-overcredit'
           , "Transaction overcredits account: " + filter[fieldName] + 
-            " (" + fieldName + ")"
+            " (" + fieldName + " by " + accountTotal + ")"
         );
       }
       if (accountTotal < 0 && transaction.amount < 0) {
+        debugger;
         return new Payments.Error('transaction-overcharge'
           , "Transaction overcharges account: " + filter[fieldName] + 
-            " (" + fieldName + ")"
+            " (" + fieldName + " by " + accountTotal + ")"
         );
       }
     });

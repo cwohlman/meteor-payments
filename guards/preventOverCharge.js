@@ -1,7 +1,7 @@
 
 // Ensures that any transactions which contain a userId will not exceed a zero
 // balance
-Payments.prototype.registerAccountField('userId');
+// Payments.prototype.registerAccountField('userId');
 
 // Ensures that entries in the transactions collection will be counted when
 // calculating an account balance

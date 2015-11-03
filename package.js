@@ -1,7 +1,7 @@
 Package.describe({
   name: 'cwohlman:payments',
   summary: 'Bulletproof payment processing logic.',
-  version: "0.4.4",
+  version: "0.4.5",
   git: 'https://github.com/cwohlman/meteor-payments.git'
 });
 
